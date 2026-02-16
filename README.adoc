@@ -16,6 +16,14 @@ https://ttlappalainen.github.io/NMEA2000/changes.html
 Read more from the full documentation on Github Pages: 
 https://ttlappalainen.github.io/NMEA2000/index.html
 
+== Build and integration model ==
+
+This repository primarily provides a *library*, not a standalone command-line tool.
+
+In normal use, you compile the library together with the application that will run on your target platform (for example an Arduino sketch, ESP-IDF app, or another C++ application).
+
+You can also build the library and tests with CMake for host-side development, but deployment usage is still typically by linking the library into your own program.
+
 
 == License ==
 
