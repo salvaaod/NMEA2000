@@ -1,6 +1,6 @@
 /*
   Linux SocketCAN example:
-  Sends static Battery Status PGN 127508 once per second on can0.
+  Sends static Engine Parameters, Rapid Update PGN 127488 once per second on can0.
 
   Dependencies:
   - This NMEA2000 library
@@ -18,21 +18,21 @@
 
 namespace {
 
-const unsigned long kTransmitMessages[] PROGMEM = {127508L, 0};
+const unsigned long kTransmitMessages[] PROGMEM = {127488L, 0};
 
 void ConfigureDevice() {
   NMEA2000.SetProductInformation(
       "00000001",      // Model serial code
       1300,             // Product code
-      "Pi Battery Tx", // Model ID
+      "Pi Engine Tx",  // Model ID
       "1.0.0",         // Software version
       "1.0.0"          // Model version
   );
 
   NMEA2000.SetDeviceInformation(
       1,    // Unique number
-      170,  // Device function = Battery
-      35,   // Device class = Electrical Generation
+      150,  // Device function = Engine
+      50,   // Device class = Propulsion
       2046  // Manufacturer code
   );
 
@@ -41,15 +41,14 @@ void ConfigureDevice() {
   NMEA2000.Open();
 }
 
-void SendStaticBatteryStatus() {
+void SendStaticEngineInfo() {
   tN2kMsg msg;
-  const unsigned char batteryInstance = 0;
-  const double voltage = 12.70;       // Volts
-  const double current = -3.20;       // Amps (negative = discharging)
-  const double temperatureK = 298.15; // 25 C in Kelvin
-  const unsigned char sid = 1;
+  const unsigned char engineInstance = 1;
+  const double rpm = 1800.0;
+  const double boostPressure = N2kDoubleNA;
+  const int8_t tiltTrim = N2kInt8NA;
 
-  SetN2kPGN127508(msg, batteryInstance, voltage, current, temperatureK, sid);
+  SetN2kEngineParamRapid(msg, engineInstance, rpm, boostPressure, tiltTrim);
   NMEA2000.SendMsg(msg);
 }
 
@@ -60,7 +59,7 @@ int main() {
 
   while (true) {
     NMEA2000.ParseMessages();
-    SendStaticBatteryStatus();
+    SendStaticEngineInfo();
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 
